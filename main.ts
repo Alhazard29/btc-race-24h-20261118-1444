@@ -15,7 +15,8 @@
 //        is the recovery, and the trail (not size) is the risk control.
 //     3. Exit on a 0.75% trailing stop from the highest close since entry.
 //        The tight trail banks the recovery before the chop eats it (a 1.5%
-//        trail keeps only +$1.37). Re-arm after a 60-bar cooldown.
+//        trail keeps only +$1.37). No re-arm cooldown (cool 0 beats cool 60:
+//        +$9.95 vs +$9.73, same 4 trades).
 //     4. Fallback: if nothing was ever bought by batch 720, buy on the first
 //        batch whose close is above the 60-bar EMA (trend confirmation), same
 //        trail. On the dev window it never fires (dev PnL unchanged +$9.73);
@@ -38,7 +39,10 @@ const EMA_FAST = 12;
 const EMA_SLOW = 60;
 const TRAIL_NUM = 9925n; // exit when close < peak * 9925/10000 (0.75% below peak)
 const TRAIL_DEN = 10000n;
-const COOLDOWN_BARS = 60;
+const COOLDOWN_BARS = 0; // no re-arm cooldown: the sweep (backtest3.mjs + fine
+// trail sweep) shows cool 0 (+$9.95) beats cool 60 (+$9.73) with the same
+// 4 trades and maxDD 1.46% vs 1.29%; the trail itself is the risk control,
+// and waiting 60 bars after a trail exit only misses the next turn.
 const FALLBACK_BAR = 720;
 const ENTRY_MAX_SLIPPAGE_BPS = 1000;
 const STOP_MAX_SLIPPAGE_BPS = 10000;
